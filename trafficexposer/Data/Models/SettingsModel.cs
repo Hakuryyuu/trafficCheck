@@ -9,7 +9,7 @@ namespace trafficexposer.Data
     /// <summary>
     /// Model for Settings which are saved.
     /// </summary>
-    public struct Settings
+    public class Settings
     {
         public Area[] Areas { get; set; }
     }

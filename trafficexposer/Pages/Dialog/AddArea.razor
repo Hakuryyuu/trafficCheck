@@ -4,14 +4,14 @@
     <DialogContent>
         <MudTimePicker Label="Estimated Leaving" @bind-Time="Leave" />
         <MudItem xs="12" sm="6" md="4">
-            <MudAutocomplete T="string" Label="From" @bind-Value="startLoc" SearchFunc="@SearchLoc"
+            <MudAutocomplete T="Location" Label="From" ToStringFunc="@(Location => Location.Name)" @bind-Value="startLoc" SearchFunc="@SearchLoc"
                              ResetValueOnEmptyText="false"
                              CoerceText="false" CoerceValue="false"
                              AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" />
         </MudItem>
 
         <MudItem xs="12" sm="6" md="4">
-            <MudAutocomplete T="string" Label="To" @bind-Value="destinyLoc" SearchFunc="@SearchLoc"
+            <MudAutocomplete T="Location" Label="To" ToStringFunc="@(Location => Location.Name)" @bind-Value="destinyLoc" SearchFunc="@SearchLoc"
                              ResetValueOnEmptyText="false"
                              CoerceText="false" CoerceValue="false"
                              AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" />
@@ -24,33 +24,64 @@
 </MudDialog>
 
 @code {
-    private string startLoc, destinyLoc;
+    private Location destinyLoc, startLoc;
     TimeSpan? Leave = new TimeSpan(00, 45, 00);
 
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
-    private void Submit(){
-
+    private async Task Submit()
+    {
+        await SaveEntry();
         MudDialog.Close(DialogResult.Ok(true));
     } 
     void Cancel() => MudDialog.Cancel();
 
-
-    private async Task<IEnumerable<string>> SearchLoc(string val)
+    private async Task SaveEntry()
     {
-        string[] sMatches = null;
-        if (String.IsNullOrEmpty(val) || val.Length < 3)
+        FileManagement Filer = new FileManagement();
+        List<Area> currentData;
+        if (Sysdba.SavedData.Areas != null)
         {
-            return sMatches;
+            currentData = Sysdba.SavedData.Areas.ToList();
+        }else{
+            currentData = new List<Area>();
         }
-        var Matches = Data.getLocations(val).Result;
-        sMatches = new string[Matches.Length];
-
-        for (int i = 0; i < Matches.Length; i++)
-        {
-            sMatches[i] = Matches[i].Name;
-        }
-        sMatches = sMatches.Distinct().ToArray(); 
-        return sMatches.Where(x => x.Contains(val, StringComparison.InvariantCultureIgnoreCase));
+        currentData.Add(new Area { EstimatedLeave = Leave, StartLocation = startLoc, Destiny = destinyLoc });
+        Sysdba.SavedData.Areas = currentData.ToArray();
+        await Filer.SerializeSettings(Sysdba.SavedData);
+        base.StateHasChanged();
+        base.ShouldRender();
     }
+
+    private async Task<IEnumerable<Location>> SearchLoc(string val)
+    {
+        Location[] Matches = null;
+        if (String.IsNullOrEmpty(val) || val.Length < 3) //Start searching from 3+ Letters
+        {
+            return Matches;
+        }
+         Matches = Data.getLocations(val).Result;
+
+        Matches = Matches.Distinct().ToArray(); // Remove Duplicates, every entry needs to be unique.
+        return Matches.Where(x => x.Name.Contains(val, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+
+    //private async Task<IEnumerable<Location>> SearchLoc(string val)
+    //{
+    //    string[] sMatches = null;
+    //    if (String.IsNullOrEmpty(val) || val.Length < 3) //Start searching from 3+ Letters
+    //    {
+    //        return sMatches;
+    //    }
+    //    var Matches = Data.getLocations(val).Result;
+    //    sMatches = new string[Matches.Length];
+
+    //    for (int i = 0; i < Matches.Length; i++) //Map from Object to String
+    //    {
+    //        sMatches[i] = Matches[i].Name;
+    //    }
+    //    sMatches = sMatches.Distinct().ToArray(); // Remove Duplicates, every entry needs to be unique.
+    //    return sMatches.Where(x => x.Contains(val, StringComparison.InvariantCultureIgnoreCase));
+    //}
 }
