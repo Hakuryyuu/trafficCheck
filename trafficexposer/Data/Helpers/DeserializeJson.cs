@@ -41,7 +41,7 @@ namespace trafficexposer.Data
                 {
                     JObject addr = (JObject)results[i]["address"];
                     JObject pos = (JObject)results[i]["position"];
-                    Locs[i].Name = Convert.ToString(((JValue)addr.SelectToken("municipality")).Value); // Location Name
+                    Locs[i].Name = Convert.ToString(((JValue)addr.SelectToken("freeformAddress")).Value); // Location Name
                     Locs[i].Longitude = Convert.ToString(((JValue)pos.SelectToken("lon")).Value); //Location cords
                     Locs[i].Latitude = Convert.ToString(((JValue)pos.SelectToken("lat")).Value);
 
@@ -173,7 +173,7 @@ namespace trafficexposer.Data
         {
             HttpClient client = new HttpClient();
             string res = String.Empty;
-            var response = await client.GetAsync(url);
+            var response = client.GetAsync(url).Result;
 
             if (response.IsSuccessStatusCode == true)
             {

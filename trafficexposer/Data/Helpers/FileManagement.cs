@@ -11,10 +11,10 @@ namespace trafficexposer.Data.Helpers
     {
         private readonly string APPATH;
         private readonly string SETTINGS_FILENAME;
-        public FileManagement(string Path)
+        public FileManagement()
         {
-            APPATH = Path;
-            SETTINGS_FILENAME = "Settings.json";
+            APPATH = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            SETTINGS_FILENAME = "\\Settings.json";
         }
         /// <summary>
         /// Save the current Settings to Drive
@@ -49,12 +49,8 @@ namespace trafficexposer.Data.Helpers
             {
                 await SerializeSettings(new Settings());
             }
-            string SettingsJson = await ReadSettingsFromDisk();
+            string SettingsJson = File.ReadAllText(APPATH + SETTINGS_FILENAME); 
             return JsonConvert.DeserializeObject<Settings>(SettingsJson);
-        }
-        private async Task<string> ReadSettingsFromDisk()
-        {
-            return await File.ReadAllTextAsync(APPATH + SETTINGS_FILENAME);
         }
     }
 }

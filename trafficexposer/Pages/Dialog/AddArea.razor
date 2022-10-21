@@ -1,6 +1,21 @@
-﻿<MudDialog>
+﻿@inject DataProvider Data
+
+<MudDialog>
     <DialogContent>
-        Dialog Content
+        <MudTimePicker Label="Estimated Leaving" @bind-Time="Leave" />
+        <MudItem xs="12" sm="6" md="4">
+            <MudAutocomplete T="string" Label="From" @bind-Value="startLoc" SearchFunc="@SearchLoc"
+                             ResetValueOnEmptyText="false"
+                             CoerceText="false" CoerceValue="false"
+                             AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" />
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="4">
+            <MudAutocomplete T="string" Label="To" @bind-Value="destinyLoc" SearchFunc="@SearchLoc"
+                             ResetValueOnEmptyText="false"
+                             CoerceText="false" CoerceValue="false"
+                             AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" />
+        </MudItem>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
@@ -9,8 +24,33 @@
 </MudDialog>
 
 @code {
+    private string startLoc, destinyLoc;
+    TimeSpan? Leave = new TimeSpan(00, 45, 00);
+
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
-    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    private void Submit(){
+
+        MudDialog.Close(DialogResult.Ok(true));
+    } 
     void Cancel() => MudDialog.Cancel();
+
+
+    private async Task<IEnumerable<string>> SearchLoc(string val)
+    {
+        string[] sMatches = null;
+        if (String.IsNullOrEmpty(val) || val.Length < 3)
+        {
+            return sMatches;
+        }
+        var Matches = Data.getLocations(val).Result;
+        sMatches = new string[Matches.Length];
+
+        for (int i = 0; i < Matches.Length; i++)
+        {
+            sMatches[i] = Matches[i].Name;
+        }
+        sMatches = sMatches.Distinct().ToArray(); 
+        return sMatches.Where(x => x.Contains(val, StringComparison.InvariantCultureIgnoreCase));
+    }
 }

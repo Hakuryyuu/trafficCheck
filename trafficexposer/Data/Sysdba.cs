@@ -13,15 +13,11 @@ namespace trafficexposer.Data
     /// </summary>
     public static class Sysdba
     {
-        static FileManagement FM = new FileManagement(APPLICATION_PATH);
+        static FileManagement FM = new FileManagement();
         /// <summary>
         /// TomTom API Key
         /// </summary>
-        public const string API_KEY = "";
-        /// <summary>
-        /// Application Path for saving Data
-        /// </summary>      
-        public static readonly string APPLICATION_PATH = System.Reflection.Assembly.GetExecutingAssembly().Location;
+        public const string API_KEY = "Kl1LK6P8HUHvO2y1CYnIaQ5P25v9b3h7";
 
         /// <summary>
         /// Saved Areas from the User

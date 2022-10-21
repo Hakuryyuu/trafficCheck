@@ -13,6 +13,6 @@ namespace trafficexposer.Data
     {
         public Location StartLocation { get; set; }
         public Location Destiny { get; set; }
-        public DateTime EstimatedLeave { get; set; }
+        public TimeSpan EstimatedLeave { get; set; }
     }
 }
