@@ -20,5 +20,19 @@ namespace trafficexposer.Data
         /// <param name="area"></param>
         /// <returns></returns>
         public Task<Incident[]> getIncidents(Area area);
+        /// <summary>
+        /// Remove an Area permanently
+        /// </summary>
+        /// <param name="area"></param>
+        /// <returns></returns>
+        public Task RemoveAreaAsync(Area area);
+        /// <summary>
+        /// Add and Area permanently
+        /// </summary>
+        /// <param name="Leave"></param>
+        /// <param name="startLoc"></param>
+        /// <param name="destinyLoc"></param>
+        /// <returns></returns>
+        public Task AddAreaAsync(TimeSpan? Leave, Location startLoc, Location destinyLoc);
     }
 }

@@ -31,27 +31,11 @@
 
     private async Task Submit()
     {
-        await SaveEntry();
+        await Data.AddAreaAsync(Leave, startLoc, destinyLoc); // Save data
         MudDialog.Close(DialogResult.Ok(true));
     } 
     void Cancel() => MudDialog.Cancel();
 
-    private async Task SaveEntry()
-    {
-        FileManagement Filer = new FileManagement();
-        List<Area> currentData;
-        if (Sysdba.SavedData.Areas != null)
-        {
-            currentData = Sysdba.SavedData.Areas.ToList();
-        }else{
-            currentData = new List<Area>();
-        }
-        currentData.Add(new Area { EstimatedLeave = Leave, StartLocation = startLoc, Destiny = destinyLoc });
-        Sysdba.SavedData.Areas = currentData.ToArray();
-        await Filer.SerializeSettings(Sysdba.SavedData);
-        base.StateHasChanged();
-        base.ShouldRender();
-    }
 
     private async Task<IEnumerable<Location>> SearchLoc(string val)
     {

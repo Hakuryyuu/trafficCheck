@@ -20,7 +20,7 @@
                             <MudText Typo="Typo.h6">@Area.StartLocation.Name -> @Area.Destiny.Name</MudText>
                         </CardHeaderContent>
                         <CardHeaderActions>
-                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" />
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" @onclick="() => DeleteEntry(Area)" />
                         </CardHeaderActions>
                     </MudCardHeader>
                     <MudCardContent>
@@ -51,7 +51,20 @@
 
     private void OpenDialog(DialogOptions options)
     {
+
+        
         Dialog.Show<AddArea>("Add new Destination", options);
+        base.StateHasChanged();
+
+    }
+
+    private void CloseDialog(Action<IDialogReference, DialogResult> ac){
+    
+    }
+
+    private async Task DeleteEntry(Area area){
+        await Data.RemoveAreaAsync(area);
+        this.StateHasChanged();
     }
 
 }

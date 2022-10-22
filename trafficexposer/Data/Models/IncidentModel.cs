@@ -14,7 +14,7 @@ namespace trafficexposer.Data
     {
         public string From { get; set; }
         public string To { get; set; } 
-        public string AdditionalInfo { get; set; } //C
+        public string AdditionalInfo { get; set; }
         public string Description { get; set; }
         public string LengthOfDelay { get; set; }
         public string SinceTime { get; set; }
