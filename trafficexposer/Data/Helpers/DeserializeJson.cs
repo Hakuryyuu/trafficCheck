@@ -61,41 +61,54 @@ namespace trafficexposer.Data
         public async Task<Incident[]> getTrafficInformationAsync(Location Loc1, Location Loc2)
         {
             Incident[] Incidents = null;
-
-            Format(ref Loc1, ref Loc2); // Format Numbers to US Format;
-            string data = await getJsonFromURL($"https://api.tomtom.com/traffic/services/4/incidentDetails/s3/{Loc1.Latitude},{Loc1.Longitude},{Loc2.Latitude},{Loc2.Longitude}/10/-1/json?key={API_KEY}&projection=EPSG4326");
-
-            if (!String.IsNullOrEmpty(data))
+            if (!String.IsNullOrEmpty(Loc1.Longitude) && // Check if the Data is valid for Exception prevention
+                !String.IsNullOrEmpty(Loc1.Latitude) &&
+                !String.IsNullOrEmpty(Loc2.Latitude) &&
+                !String.IsNullOrEmpty(Loc2.Longitude))
             {
-                JObject joResponse = JObject.Parse(data);
-                JObject tm = (JObject)joResponse["tm"];
-                JArray inc = (JArray)tm["poi"];
 
-                Incidents = new Incident[inc.Count];
 
-                for (int i = 0; i < inc.Count; i++)
+                Format(ref Loc1, ref Loc2); // Format Numbers to US Format
+                string data = await getJsonFromURL($"https://api.tomtom.com/traffic/services/4/incidentDetails/s3/{Loc1.Latitude},{Loc1.Longitude},{Loc2.Latitude},{Loc2.Longitude}/10/-1/json?key={API_KEY}&projection=EPSG4326");
+
+                if (!String.IsNullOrEmpty(data))
                 {
-                    if (!((JValue)inc[i].SelectToken("id")).Value.ToString().Contains("CLUSTER"))
+                    JObject joResponse = JObject.Parse(data);
+                    JObject tm = (JObject)joResponse["tm"];
+                    JArray inc = (JArray)tm["poi"];
+
+                    Incidents = new Incident[inc.Count];
+
+                    for (int i = 0; i < inc.Count; i++)
                     {
-                        JObject pos = (JObject)inc[i]["p"];
-                        Incidents[i].LocX = Convert.ToDouble(((JValue)pos.SelectToken("x")).Value); // Location of the Incident
-                        Incidents[i].LocY = Convert.ToDouble(((JValue)pos.SelectToken("y")).Value);
+                        if (!((JValue)inc[i].SelectToken("id")).Value.ToString().Contains("CLUSTER") &&
+                            !String.IsNullOrEmpty(((JValue)inc[i].SelectToken("f")).Value.ToString()) &&
+                            !String.IsNullOrEmpty(((JValue)inc[i].SelectToken("t")).Value.ToString())) //Basic filtering of invalid/empty data which are returned by the APU&& !String.IsNullOrEmpty(((JValue)inc[i].SelectToken("f")).Value.ToString())I
+                        {
+                            await GetType(Incidents, inc, i);
+                            TimeSpan AgeOfAccident = DateTime.Parse(DateTime.Now.ToString()).Subtract(DateTime.Parse(Convert.ToString(((JValue)inc[i].SelectToken("sd")).Value)));
+                            if (Incidents[i].Type != IncidentTypes.Type.ACCIDENT && AgeOfAccident.Days > 1) // Remove old accidents returned by the API
+                            {
+                                JObject pos = (JObject)inc[i]["p"];
+                                Incidents[i].LocX = Convert.ToDouble(((JValue)pos.SelectToken("x")).Value); // Location of the Incident
+                                Incidents[i].LocY = Convert.ToDouble(((JValue)pos.SelectToken("y")).Value);
 
-                            //Incidents[i].AdditionalInfo = Convert.ToString(((JValue)inc[i].SelectToken("c")).Value); // Info like "one line closed"
-           
-                        Incidents[i].Description = Convert.ToString(((JValue)inc[i].SelectToken("d")).Value); // desc ex. "road closed"
-                        Incidents[i].SinceTime = Convert.ToString(((JValue)inc[i].SelectToken("sd")).Value); // since when its closed
-                        Incidents[i].From = Convert.ToString(((JValue)inc[i].SelectToken("f")).Value); // from city
-                        Incidents[i].To = Convert.ToString(((JValue)inc[i].SelectToken("t")).Value); // to city
-                        Incidents[i].LengthOfDelay = Convert.ToString(((JValue)inc[i].SelectToken("l")).Value); //Lentgh of the Delay in KM
+                                //Incidents[i].AdditionalInfo = Convert.ToString(((JValue)inc[i].SelectToken("c")).Value); // Info like "one line closed"
 
-                        await GetType(Incidents, inc, i);
-                        await GetSeverity(Incidents, inc, i);
+                                Incidents[i].Description = Convert.ToString(((JValue)inc[i].SelectToken("d")).Value); // desc ex. "road closed"
+                                Incidents[i].SinceTime = Convert.ToString(((JValue)inc[i].SelectToken("sd")).Value); // since when its closed
+                                Incidents[i].From = Convert.ToString(((JValue)inc[i].SelectToken("f")).Value); // from city
+                                Incidents[i].To = Convert.ToString(((JValue)inc[i].SelectToken("t")).Value); // to city
+                                Incidents[i].LengthOfDelay = Convert.ToString(((JValue)inc[i].SelectToken("l")).Value); //Lentgh of the Delay in KM
+
+
+                                await GetSeverity(Incidents, inc, i);
+                            }
+                        }
                     }
+
                 }
-
             }
-
             return Incidents;
         }
 

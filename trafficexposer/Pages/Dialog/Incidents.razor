@@ -1,0 +1,101 @@
+﻿<MudDialog>
+    <DialogContent>
+        @foreach (var incident in _Incidents)
+        {
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderAvatar>
+                        @switch (incident.Severity)
+                        {
+                            case IncidentTypes.Severity.CLOSED:
+                                <MudAvatar Color="Color.Error">!</MudAvatar>
+                                break;
+                            case IncidentTypes.Severity.QUEUING_TRAFFIC:
+                                <MudAvatar Color="Color.Warning">!</MudAvatar>
+                                break;
+                            case IncidentTypes.Severity.SLOW_TRAFFIC:
+                                <MudAvatar Color="Color.Warning">!</MudAvatar>
+                                break;
+                            case IncidentTypes.Severity.STATIONARY_TRAFFIC:
+                                <MudAvatar Color="Color.Error">!</MudAvatar>
+                                break;
+                            case IncidentTypes.Severity.NO_DELAY:
+                                <MudAvatar Color="Color.Success">✓</MudAvatar>
+                                break;
+                            default:
+                                <MudAvatar Color="Color.Transparent">!</MudAvatar>
+                                break;
+                        }
+                    </CardHeaderAvatar>
+                    <CardHeaderContent>
+                        @switch (incident.Severity)
+                        {
+                            case IncidentTypes.Severity.CLOSED:
+                                <MudText Typo="Typo.body1">Road Closed</MudText>
+                                break;
+                            case IncidentTypes.Severity.QUEUING_TRAFFIC:
+                                <MudText Typo="Typo.body1">Queuing Traffic</MudText>
+                                break;
+                            case IncidentTypes.Severity.SLOW_TRAFFIC:
+                                <MudText Typo="Typo.body1">Slow Traffic</MudText>
+                                break;
+                            case IncidentTypes.Severity.STATIONARY_TRAFFIC:
+                                <MudText Typo="Typo.body1">Stationary Traffic</MudText>
+                                break;
+                            case IncidentTypes.Severity.NO_DELAY:
+                                <MudText Typo="Typo.body1">Currently no Delays</MudText>
+                                break;
+                            default:
+                                <MudText Typo="Typo.body1">Unknown</MudText>
+                                break;
+                        }
+                        <MudText Typo="Typo.body2">Since: @incident.SinceTime</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        @* <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />*@
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText Typo="Typo.body2">Area: @incident.From - @incident.To</MudText>
+                    <MudText Typo="Typo.body2">Info: @incident.Description</MudText>
+                    <MudText Typo="Typo.body2">Length (km): @incident.LengthOfDelay</MudText>
+                    @switch (incident.Type)
+                    {
+                        case IncidentTypes.Type.LONG_TERM_ROADWORK:
+                            <MudText Typo="Typo.body2">Type: Long-Term Roadwork</MudText>
+                            break;
+                        case IncidentTypes.Type.ROADWORK:
+                            <MudText Typo="Typo.body2">Type: Roadwork</MudText>
+                            break;
+                        case IncidentTypes.Type.ACCIDENT:
+                            <MudText Typo="Typo.body2">Type: Accident</MudText>
+                            break;
+                        case IncidentTypes.Type.ACCIDENT_CLEARED:
+                            <MudText Typo="Typo.body2">Type: Accident is being cleared</MudText>
+                            break;
+                        case IncidentTypes.Type.TRAFFIC_JAM:
+                        <MudText Typo="Typo.body2">Type: Traffic Jam</MudText>
+                            break;
+                        default:
+                        <MudText Typo="Typo.body2">Type: Unknown</MudText>
+                            break;
+                    }   
+                </MudCardContent>
+                <MudCardActions>
+                </MudCardActions>
+            </MudCard>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public Incident[] _Incidents { get; set; }
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    void Cancel() => MudDialog.Cancel();
+}

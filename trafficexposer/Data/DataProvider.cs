@@ -9,46 +9,82 @@ namespace trafficexposer.Data
     public class DataProvider : IDataProvider
     {
         DeserializeJson DS = new DeserializeJson(Sysdba.API_KEY);
+        FileManagement Filer = new FileManagement();
         public async Task<Location[]> getLocations(string Loc)
         {
-            return await DS.getCitiesAsync(Loc);
+            try
+            {
+                return await DS.getCitiesAsync(Loc);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
         }
 
         public async Task<Incident[]> getIncidents(Area area)
         {
-          return await DS.getTrafficInformationAsync(area.StartLocation, area.Destiny);
+            try
+            {
+                Incident[] incidents = await DS.getTrafficInformationAsync(area.StartLocation, area.Destiny);
+                incidents = incidents.Where(ix => ix.LocX != 0).ToArray(); // Remove unnecessary slots
+                return incidents;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public async Task RemoveAreaAsync(Area area)
         {
-            List<Area> currentData;
-            if (Sysdba.SavedData.Areas != null)
+            try
             {
-                currentData = Sysdba.SavedData.Areas.ToList();
+                List<Area> currentData;
+                if (Sysdba.SavedData.Areas != null)
+                {
+                    currentData = Sysdba.SavedData.Areas.ToList();
+                }
+                else
+                {
+                    return;
+                }
+                currentData.Remove(area);
+                Sysdba.SavedData.Areas = currentData.ToArray();
+                await Filer.SerializeSettings(Sysdba.SavedData);
             }
-            else
+            catch (Exception)
             {
-                return;
+
+                throw;
             }
-            currentData.Remove(area);
-            Sysdba.SavedData.Areas = currentData.ToArray();
         }
 
         public async Task AddAreaAsync(TimeSpan? Leave, Location startLoc, Location destinyLoc)
         {
-            FileManagement Filer = new FileManagement();
-            List<Area> currentData;
-            if (Sysdba.SavedData.Areas != null)
+            try
             {
-                currentData = Sysdba.SavedData.Areas.ToList();
+                List<Area> currentData;
+                if (Sysdba.SavedData.Areas != null)
+                {
+                    currentData = Sysdba.SavedData.Areas.ToList();
+                }
+                else
+                {
+                    currentData = new List<Area>();
+                }
+                currentData.Add(new Area { EstimatedLeave = Leave, StartLocation = startLoc, Destiny = destinyLoc });
+                Sysdba.SavedData.Areas = currentData.ToArray();
+                await Filer.SerializeSettings(Sysdba.SavedData);
             }
-            else
+            catch (Exception)
             {
-                currentData = new List<Area>();
+
+                throw;
             }
-            currentData.Add(new Area { EstimatedLeave = Leave, StartLocation = startLoc, Destiny = destinyLoc });
-            Sysdba.SavedData.Areas = currentData.ToArray();
-            await Filer.SerializeSettings(Sysdba.SavedData);
         }
     }
 }

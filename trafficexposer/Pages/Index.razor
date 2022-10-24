@@ -10,29 +10,53 @@
     <MudContainer MaxWidth="MaxWidth.Small">
         <MudPaper Height="400px" Width="100%" Square="true">
             <MudDivider DividerType="DividerType.Middle" Class="my-6" />
-            @if(Sysdba.SavedData.Areas != null){
-            @foreach (var Area in Sysdba.SavedData.Areas)
+            @if (Sysdba.SavedData.Areas != null)
             {
-                
-                <MudCard>
-                    <MudCardHeader>
-                        <CardHeaderContent>
-                            <MudText Typo="Typo.h6">@Area.StartLocation.Name -> @Area.Destiny.Name</MudText>
-                        </CardHeaderContent>
-                        <CardHeaderActions>
-                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" @onclick="() => DeleteEntry(Area)" />
-                        </CardHeaderActions>
-                    </MudCardHeader>
-                    <MudCardContent>
-                        <MudText>Planned Leave: @Area.EstimatedLeave</MudText>
-                        <MudAlert Severity="Severity.Error">Road Closure!</MudAlert>
-                    </MudCardContent>
-                    <MudCardActions>
-                        <MudButton Variant="Variant.Text" Color="Color.Primary">Read More</MudButton>
-                    </MudCardActions>
-                </MudCard>
-                <MudDivider DividerType="DividerType.Middle" Class="my-6" />
-            }
+                @foreach (var Area in Sysdba.SavedData.Areas)
+                {
+                    var Inc = Data.getIncidents(Area).Result; // Obtain information about Incidents in given Area
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@Area.StartLocation.Name ➜ @Area.Destiny.Name</MudText>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" @onclick="() => DeleteEntry(Area)" />
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudText>Planned Leave: @Area.EstimatedLeave</MudText>
+                            @if (Array.Exists(Inc, e => e.Severity == IncidentTypes.Severity.CLOSED)) // Quick overview info
+                            {
+                                <MudAlert Severity="Severity.Error">Road Closure</MudAlert>
+                            }
+                            else if (Array.Exists(Inc, e => e.Severity == IncidentTypes.Severity.STATIONARY_TRAFFIC))
+                            {
+                                <MudAlert Severity="Severity.Error">Stationary Traffic</MudAlert>
+                            }
+                            else if (Array.Exists(Inc, e => e.Severity == IncidentTypes.Severity.SLOW_TRAFFIC))
+                            {
+                                <MudAlert Severity="Severity.Warning">Slow Traffic</MudAlert>
+                            }
+                            else if (Array.Exists(Inc, e => e.Severity == IncidentTypes.Severity.QUEUING_TRAFFIC))
+                            {
+                                <MudAlert Severity="Severity.Warning">Queuing Traffic</MudAlert>
+                            }
+                            else{
+                                <MudAlert Severity="Severity.Success">Currently no delays</MudAlert>
+                            }
+                        </MudCardContent>
+                        <MudCardActions>
+                            @if (Inc.Length > 1) // Only display Button if there are Incidents
+                            {
+                                <MudButton Variant="Variant.Text" Color="Color.Primary" @onclick="() => OpenIncidentsDialog(Inc, maxWidth)">Details</MudButton>
+                            }
+                        </MudCardActions>
+                    </MudCard>
+                    <MudDivider DividerType="DividerType.Middle" Class="my-6" />
+                }
+            } else{
+                <MudAlert Severity="Severity.Info">You have no saved Destinations</MudAlert>
             }
         </MudPaper>
     </MudContainer>
@@ -52,17 +76,26 @@
     private void OpenDialog(DialogOptions options)
     {
 
-        
+
         Dialog.Show<AddArea>("Add new Destination", options);
         base.StateHasChanged();
 
     }
 
-    private void CloseDialog(Action<IDialogReference, DialogResult> ac){
-    
+    private void CloseDialog(Action<IDialogReference, DialogResult> ac)
+    {
+
     }
 
-    private async Task DeleteEntry(Area area){
+    private void OpenIncidentsDialog(Incident[] incidents, DialogOptions options)
+    {
+        var param = new DialogParameters();
+        param.Add("_Incidents", incidents);
+        Dialog.Show<Incidents>("Reported incidents", param, options);
+    }
+
+    private async Task DeleteEntry(Area area)
+    {
         await Data.RemoveAreaAsync(area);
         this.StateHasChanged();
     }
