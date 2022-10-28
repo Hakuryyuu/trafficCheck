@@ -19,18 +19,18 @@ namespace trafficexposer.Data
         /// <summary>
         /// Save the current Settings to Drive
         /// </summary>
-        /// <param name="data"></param>
+        /// <param name="oData"></param>
         /// <returns></returns>
-        public async Task SerializeSettings(Settings data)
+        public async Task SerializeSettings(Settings oData)
         {
-            string Json = JsonConvert.SerializeObject(data);
-            await WriteSettingsToDisk(Json);
+            string sJson = JsonConvert.SerializeObject(oData);
+            await WriteSettingsToDisk(sJson);
         }
-        private async Task WriteSettingsToDisk(string Json)
+        private async Task WriteSettingsToDisk(string sJson)
         {
             try
             {
-               await File.WriteAllTextAsync(APPATH + SETTINGS_FILENAME, Json);
+               await File.WriteAllTextAsync(APPATH + SETTINGS_FILENAME, sJson);
             }
             catch (Exception)
             {
@@ -49,8 +49,8 @@ namespace trafficexposer.Data
             {
                 await SerializeSettings(new Settings());
             }
-            string SettingsJson = File.ReadAllText(APPATH + SETTINGS_FILENAME); 
-            return JsonConvert.DeserializeObject<Settings>(SettingsJson);
+            string sSettingsJson = File.ReadAllText(APPATH + SETTINGS_FILENAME); 
+            return JsonConvert.DeserializeObject<Settings>(sSettingsJson);
         }
     }
 }

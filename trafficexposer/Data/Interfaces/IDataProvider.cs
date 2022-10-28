@@ -11,28 +11,28 @@ namespace trafficexposer.Data
         /// <summary>
         /// Returns an Array of possible Matches
         /// </summary>
-        /// <param name="Loc"></param>
+        /// <param name="sLoc"></param>
         /// <returns></returns>
-        public Task<Location[]> getLocations(string Loc);
+        public Task<Location[]> getLocations(string sLoc);
         /// <summary>
         /// Returns all Incidents for the defined Area
         /// </summary>
-        /// <param name="area"></param>
+        /// <param name="oArea"></param>
         /// <returns></returns>
-        public Task<Incident[]> getIncidents(Area area);
+        public Task<Incident[]> getIncidents(Area oArea);
         /// <summary>
         /// Remove an Area permanently
         /// </summary>
-        /// <param name="area"></param>
+        /// <param name="oArea"></param>
         /// <returns></returns>
-        public Task RemoveAreaAsync(Area area);
+        public Task RemoveAreaAsync(Area oArea);
         /// <summary>
         /// Add and Area permanently
         /// </summary>
-        /// <param name="Leave"></param>
-        /// <param name="startLoc"></param>
-        /// <param name="destinyLoc"></param>
+        /// <param name="tsLeave"></param>
+        /// <param name="oStartLoc"></param>
+        /// <param name="oDestinyLoc"></param>
         /// <returns></returns>
-        public Task AddAreaAsync(TimeSpan? Leave, Location startLoc, Location destinyLoc);
+        public Task AddAreaAsync(TimeSpan? tsLeave, Location oStartLoc, Location oDestinyLoc);
     }
 }

@@ -8,29 +8,29 @@ namespace trafficexposer.Data
 {
     public class DataProvider : IDataProvider
     {
-        DeserializeJson DS = new DeserializeJson(Sysdba.API_KEY);
+        DeserializeJson Deserializer = new DeserializeJson(Sysdba.API_KEY);
         FileManagement Filer = new FileManagement();
-        public async Task<Location[]> getLocations(string Loc)
+        public async Task<Location[]> getLocations(string sLoc)
         {
             try
             {
-                return await DS.getCitiesAsync(Loc);
+                return await Deserializer.getCitiesAsync(sLoc);
             }
             catch (Exception)
             {
 
                 throw;
             }
-            
+
         }
 
         public async Task<Incident[]> getIncidents(Area area)
         {
             try
             {
-                Incident[] incidents = await DS.getTrafficInformationAsync(area.StartLocation, area.Destiny);
-                incidents = incidents.Where(ix => ix.LocX != 0).ToArray(); // Remove unnecessary slots
-                return incidents;
+                Incident[] oIncidents = await Deserializer.getTrafficInformationAsync(area.StartLocation, area.Destiny);
+                oIncidents = oIncidents.Where(ix => ix.LocX != 0).ToArray(); // Remove unnecessary slots
+                return oIncidents;
             }
             catch (Exception)
             {
@@ -43,17 +43,17 @@ namespace trafficexposer.Data
         {
             try
             {
-                List<Area> currentData;
+                List<Area> liCurrentData;
                 if (Sysdba.SavedData.Areas != null)
                 {
-                    currentData = Sysdba.SavedData.Areas.ToList();
+                    liCurrentData = Sysdba.SavedData.Areas.ToList();
                 }
                 else
                 {
                     return;
                 }
-                currentData.Remove(area);
-                Sysdba.SavedData.Areas = currentData.ToArray();
+                liCurrentData.Remove(area);
+                Sysdba.SavedData.Areas = liCurrentData.ToArray();
                 await Filer.SerializeSettings(Sysdba.SavedData);
             }
             catch (Exception)
@@ -63,21 +63,21 @@ namespace trafficexposer.Data
             }
         }
 
-        public async Task AddAreaAsync(TimeSpan? Leave, Location startLoc, Location destinyLoc)
+        public async Task AddAreaAsync(TimeSpan? tsLeave, Location oStartLoc, Location oDestinyLoc)
         {
             try
             {
-                List<Area> currentData;
+                List<Area> liCurrentData;
                 if (Sysdba.SavedData.Areas != null)
                 {
-                    currentData = Sysdba.SavedData.Areas.ToList();
+                    liCurrentData = Sysdba.SavedData.Areas.ToList();
                 }
                 else
                 {
-                    currentData = new List<Area>();
+                    liCurrentData = new List<Area>();
                 }
-                currentData.Add(new Area { EstimatedLeave = Leave, StartLocation = startLoc, Destiny = destinyLoc });
-                Sysdba.SavedData.Areas = currentData.ToArray();
+                liCurrentData.Add(new Area { EstimatedLeave = tsLeave, StartLocation = oStartLoc, Destiny = oDestinyLoc });
+                Sysdba.SavedData.Areas = liCurrentData.ToArray();
                 await Filer.SerializeSettings(Sysdba.SavedData);
             }
             catch (Exception)
