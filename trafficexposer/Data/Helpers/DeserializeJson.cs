@@ -79,14 +79,16 @@ namespace trafficexposer.Data
                     JArray joPoi = (JArray)joTm["poi"];
 
                     oIncidents = new Incident[joPoi.Count];
+                   // oIncidents = oIncidents.Where(ix => ix. != 0).ToArray();
 
                     for (int i = 0; i < joPoi.Count; i++)
                     {
                         if (!((JValue)joPoi[i].SelectToken("id")).Value.ToString().Contains("CLUSTER") &&
                             !String.IsNullOrEmpty(((JValue)joPoi[i].SelectToken("f")).Value.ToString()) &&
-                            !String.IsNullOrEmpty(((JValue)joPoi[i].SelectToken("t")).Value.ToString())) //Basic filtering of invalid/empty data which are returned by the APU&& !String.IsNullOrEmpty(((JValue)inc[i].SelectToken("f")).Value.ToString())I
+                            !String.IsNullOrEmpty(((JValue)joPoi[i].SelectToken("t")).Value.ToString()) && //Basic filtering of invalid/empty data which are returned by the API
+                            !String.IsNullOrEmpty(((JValue)joPoi[i].SelectToken("f")).Value.ToString()))
                         {
-                            await GetType(oIncidents, joPoi, i);
+                            GetType(ref oIncidents, ref joPoi, ref i);
                             TimeSpan AgeOfAccident = DateTime.Parse(DateTime.Now.ToString()).Subtract(DateTime.Parse(Convert.ToString(((JValue)joPoi[i].SelectToken("sd")).Value)));
                             if (oIncidents[i].Type != IncidentTypes.Type.ACCIDENT && AgeOfAccident.Days > 1) // Remove old accidents returned by the API
                             {
@@ -103,7 +105,7 @@ namespace trafficexposer.Data
                                 oIncidents[i].LengthOfDelay = Convert.ToString(((JValue)joPoi[i].SelectToken("l")).Value); //Lentgh of the Delay in KM
                                 Format(ref oIncidents, ref i);
 
-                                await GetSeverity(oIncidents, joPoi, i);
+                                GetSeverity(ref oIncidents, ref joPoi, ref i);
                             }
                         }
                     }
@@ -147,14 +149,14 @@ namespace trafficexposer.Data
                 sLength = new string(cLentghFormatted);
                 double dKM = Convert.ToDouble(sLength); // Convert to double for Rounding
                 dKM = Math.Round(dKM, 1); // Round to one digit
-                oIncidents[iIndex].LengthOfDelay = dKM.ToString() + "km"; // Set the new formatted value
+                oIncidents[iIndex].LengthOfDelay = dKM.ToString(); // Set the new formatted value
             }
 
             double km = Convert.ToDouble(oIncidents[iIndex].LengthOfDelay);
             km = Math.Round(km, 1);
             oIncidents[iIndex].LengthOfDelay = km.ToString();
         }
-        private static async Task GetSeverity(Incident[] oIncidents, JArray oInc, int iIndex)
+        private void GetSeverity(ref Incident[] oIncidents, ref JArray oInc, ref int iIndex)
         {
             // Severity
             switch (Convert.ToInt32(((JValue)oInc[iIndex].SelectToken("ty")).Value))
@@ -180,7 +182,7 @@ namespace trafficexposer.Data
             }
         }
 
-        private static async Task GetType(Incident[] oIncidents, JArray oInc, int iIndex)
+        private void GetType(ref Incident[] oIncidents, ref JArray oInc, ref int iIndex)
         {
             // Type of incident
             switch (Convert.ToInt32(((JValue)oInc[iIndex].SelectToken("ic")).Value))
