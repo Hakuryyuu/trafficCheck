@@ -152,15 +152,6 @@ namespace trafficexposer.Data
         }
         private void GetSeverity(ref Incident[] oIncidents, ref JArray oInc, ref int iIndex)
         {
-            if (!((JValue)oInc[iIndex].SelectToken("id")).Value.ToString().Contains("CLUSTER"))
-            {
-                string sDebug = ((JValue)oInc[iIndex].SelectToken("ty")).Value.ToString();
-
-                JToken token = oInc[iIndex].SelectToken("ty");
-                JObject testToken = (JObject)oInc[iIndex];
-                int value = token.Value<int>();
-            }
-
             // Severity
             switch (Convert.ToInt32(((JValue)oInc[iIndex].SelectToken("ty")).Value))
                 //switch (value)
