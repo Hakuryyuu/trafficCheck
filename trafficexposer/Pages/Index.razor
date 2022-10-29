@@ -6,9 +6,9 @@
 <h1>| Overview</h1>
 
 
-<MudPaper Height="400px" Width="100%">
-    <MudContainer MaxWidth="MaxWidth.Small">
-        <MudPaper Height="400px" Width="100%" Square="true">
+@*<MudPaper Height="400px" Width="100%">*@
+@*    <MudContainer MaxWidth="MaxWidth.Small">
+        <MudPaper Height="400px" Width="100%" Square="true">*@
             <MudDivider DividerType="DividerType.Middle" Class="my-6" />
             @if (Sysdba.SavedData.Areas != null)
             {
@@ -58,9 +58,9 @@
             } else{
                 <MudAlert Severity="Severity.Info">You have no saved Destinations</MudAlert>
             }
-        </MudPaper>
-    </MudContainer>
-</MudPaper>
+@*        </MudPaper>
+   </MudContainer>*@
+@*</MudPaper>*@
 
 <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="@((e) => OpenDialog(maxWidth))" />
 

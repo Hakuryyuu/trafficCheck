@@ -11,7 +11,7 @@ namespace trafficexposer.Data
 {
     public class DeserializeJson
     {
-        private string API_KEY;
+        private readonly string API_KEY;
         public DeserializeJson(string sAPI_Key)
         {
             API_KEY = sAPI_Key;
@@ -149,17 +149,23 @@ namespace trafficexposer.Data
                 sLength = new string(cLentghFormatted);
                 double dKM = Convert.ToDouble(sLength); // Convert to double for Rounding
                 dKM = Math.Round(dKM, 1); // Round to one digit
-                oIncidents[iIndex].LengthOfDelay = dKM.ToString(); // Set the new formatted value
+                oIncidents[iIndex].LengthOfDelay = dKM.ToString() + "km"; // Set the new formatted value
             }
-
-            double km = Convert.ToDouble(oIncidents[iIndex].LengthOfDelay);
-            km = Math.Round(km, 1);
-            oIncidents[iIndex].LengthOfDelay = km.ToString();
         }
         private void GetSeverity(ref Incident[] oIncidents, ref JArray oInc, ref int iIndex)
         {
+            if (!((JValue)oInc[iIndex].SelectToken("id")).Value.ToString().Contains("CLUSTER"))
+            {
+                string sDebug = ((JValue)oInc[iIndex].SelectToken("ty")).Value.ToString();
+
+                JToken token = oInc[iIndex].SelectToken("ty");
+                JObject testToken = (JObject)oInc[iIndex];
+                int value = token.Value<int>();
+            }
+
             // Severity
             switch (Convert.ToInt32(((JValue)oInc[iIndex].SelectToken("ty")).Value))
+                //switch (value)
             {
                 case 0:
                     oIncidents[iIndex].Severity = IncidentTypes.Severity.NO_DELAY;

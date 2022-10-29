@@ -2,10 +2,16 @@
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-image: url("/res/main_bg.png");
 }
 
 h1:focus {
     outline: none;
+}
+
+.mud-dialog-width-full {
+    max-height: 100%;
+    overflow: scroll;
 }
 
 a, .btn-link {
