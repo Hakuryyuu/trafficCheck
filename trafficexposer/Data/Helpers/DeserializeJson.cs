@@ -90,8 +90,7 @@ namespace trafficexposer.Data
                         {
                             GetType(ref oIncidents, ref joPoi, ref i);
                             TimeSpan AgeOfAccident = DateTime.Parse(DateTime.Now.ToString()).Subtract(DateTime.Parse(Convert.ToString(((JValue)joPoi[i].SelectToken("sd")).Value)));
-                            if (oIncidents[i].Type != IncidentTypes.Type.ACCIDENT && AgeOfAccident.Days > 1) // Remove old accidents returned by the API
-                            {
+
                                 JObject pos = (JObject)joPoi[i]["p"];
                                 oIncidents[i].LocX = Convert.ToDouble(((JValue)pos.SelectToken("x")).Value); // Location of the Incident
                                 oIncidents[i].LocY = Convert.ToDouble(((JValue)pos.SelectToken("y")).Value);
@@ -106,7 +105,6 @@ namespace trafficexposer.Data
                                 Format(ref oIncidents, ref i);
 
                                 GetSeverity(ref oIncidents, ref joPoi, ref i);
-                            }
                         }
                     }
 

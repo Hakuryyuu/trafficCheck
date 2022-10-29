@@ -28,9 +28,15 @@ namespace trafficexposer.Data
         {
             try
             {
-                Incident[] oIncidents = await Deserializer.getTrafficInformationAsync(area.StartLocation, area.Destiny);
-                oIncidents = oIncidents.Where(ix => ix.LocX != 0).ToArray(); // Remove unnecessary slots
-                return oIncidents;
+                Incident[] oIncidents = await Deserializer.getTrafficInformationAsync(area.StartLocation, area.Destiny); // Obtain Data
+                List<Incident> liTemp = oIncidents.ToList(); // Conversion to list for LINQ Expressions
+                liTemp.RemoveAll(ix => ix.LocX == 0); // Remove unnecessary slots
+                TimeSpan tsMaxAccidentAge = TimeSpan.FromDays(1); // Usually an accident should be cleared after one day
+                liTemp.RemoveAll(ix => ix.Type == IncidentTypes.Type.ACCIDENT && DateTime.Parse(DateTime.Now.ToString()).Subtract(DateTime.Parse(ix.SinceTime)) > tsMaxAccidentAge); // Remove old Accidents
+
+                oIncidents = liTemp.ToArray(); // Convert back to Array
+
+                return oIncidents; // Retrun filtered result
             }
             catch (Exception)
             {
