@@ -16,12 +16,11 @@ namespace trafficexposer.Data
             {
                 return await Deserializer.getCitiesAsync(sLoc);
             }
-            catch (Exception)
+            catch (Exception x)
             {
-
-                throw;
+                await App.Current.MainPage.DisplayAlert("Error", x.Message, "OK");
             }
-
+            return null;
         }
 
         public async Task<Incident[]> getIncidents(Area area)
@@ -31,18 +30,18 @@ namespace trafficexposer.Data
                 Incident[] oIncidents = await Deserializer.getTrafficInformationAsync(area.StartLocation, area.Destiny); // Obtain Data
                 List<Incident> liTemp = oIncidents.ToList(); // Conversion to list for LINQ Expressions
                 liTemp.RemoveAll(ix => ix.LocX == 0); // Remove unnecessary slots
-                TimeSpan tsMaxAccidentAge = TimeSpan.FromDays(1); // Usually an accident should be cleared after one day
+                TimeSpan tsMaxAccidentAge = TimeSpan.FromHours(12); // Usually an accident should be cleared 12h
                 liTemp.RemoveAll(ix => ix.Type == IncidentTypes.Type.ACCIDENT && DateTime.Parse(DateTime.Now.ToString()).Subtract(DateTime.Parse(ix.SinceTime)) > tsMaxAccidentAge); // Remove old Accidents
 
                 oIncidents = liTemp.ToArray(); // Convert back to Array
 
                 return oIncidents; // Retrun filtered result
             }
-            catch (Exception)
+            catch (Exception x)
             {
-
-                throw;
+                await App.Current.MainPage.DisplayAlert("Error", x.Message, "OK");
             }
+            return null;
         }
 
         public async Task RemoveAreaAsync(Area area)
@@ -62,10 +61,9 @@ namespace trafficexposer.Data
                 Sysdba.SavedData.Areas = liCurrentData.ToArray();
                 await Filer.SerializeSettings(Sysdba.SavedData);
             }
-            catch (Exception)
+            catch (Exception x)
             {
-
-                throw;
+                await App.Current.MainPage.DisplayAlert("Error", x.Message, "OK");
             }
         }
 
@@ -86,10 +84,9 @@ namespace trafficexposer.Data
                 Sysdba.SavedData.Areas = liCurrentData.ToArray();
                 await Filer.SerializeSettings(Sysdba.SavedData);
             }
-            catch (Exception)
+            catch (Exception x)
             {
-
-                throw;
+                await App.Current.MainPage.DisplayAlert("Error", x.Message, "OK");
             }
         }
     }

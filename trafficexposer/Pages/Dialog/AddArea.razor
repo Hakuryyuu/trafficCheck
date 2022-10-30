@@ -1,5 +1,6 @@
 ﻿@inject DataProvider Data
 
+
 <MudDialog>
     <DialogContent>
         <MudTimePicker Label="Estimated Leaving" @bind-Time="Leave" />
@@ -31,8 +32,21 @@
 
     private async Task Submit()
     {
-        await Data.AddAreaAsync(Leave, startLoc, destinyLoc); // Save data
-        MudDialog.Close(DialogResult.Ok(true));
+        // Check if the entries are != null
+        if (!String.IsNullOrEmpty(startLoc.Latitude) &&
+            !String.IsNullOrEmpty(startLoc.Longitude) &&
+            !String.IsNullOrEmpty(startLoc.Name) &&
+            !String.IsNullOrEmpty(destinyLoc.Latitude) &&
+            !String.IsNullOrEmpty(destinyLoc.Longitude) &&
+            !String.IsNullOrEmpty(destinyLoc.Name))
+        {
+            await Data.AddAreaAsync(Leave, startLoc, destinyLoc); // Save data
+            MudDialog.Close(DialogResult.Ok(true));
+        }else
+        {
+            await App.Current.MainPage.DisplayAlert("Error", "Please make sure you provided valid data.", "OK");
+        }
+        
     } 
     void Cancel() => MudDialog.Cancel();
 
@@ -49,23 +63,4 @@
         Matches = Matches.Distinct().ToArray(); // Remove Duplicates, every entry needs to be unique.
         return Matches.Where(x => x.Name.Contains(val, StringComparison.InvariantCultureIgnoreCase));
     }
-
-
-    //private async Task<IEnumerable<Location>> SearchLoc(string val)
-    //{
-    //    string[] sMatches = null;
-    //    if (String.IsNullOrEmpty(val) || val.Length < 3) //Start searching from 3+ Letters
-    //    {
-    //        return sMatches;
-    //    }
-    //    var Matches = Data.getLocations(val).Result;
-    //    sMatches = new string[Matches.Length];
-
-    //    for (int i = 0; i < Matches.Length; i++) //Map from Object to String
-    //    {
-    //        sMatches[i] = Matches[i].Name;
-    //    }
-    //    sMatches = sMatches.Distinct().ToArray(); // Remove Duplicates, every entry needs to be unique.
-    //    return sMatches.Where(x => x.Contains(val, StringComparison.InvariantCultureIgnoreCase));
-    //}
 }
