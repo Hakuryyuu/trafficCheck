@@ -50,8 +50,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="MudBlazor" Version="6.0.17" />
+      <None Remove="Platforms\Android\Resources\drawable\AppIcon.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MudBlazor" Version="6.11.0" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+      <PackageReference Include="Plugin.LocalNotification" Version="10.1.8" />
     </ItemGroup>
 
 </Project>

@@ -1,4 +1,13 @@
-﻿@inject DataProvider Data
+﻿@* /*
+ *  Created by: Hakuryuu
+ *  www.hakuryuu.net
+ *  info@hakuryuu.net
+ *
+ *  Copyright (c) 2023 Hakuryuu
+ *
+ */ *@
+
+@inject DataProvider Data
 
 
 <MudDialog>
@@ -33,12 +42,12 @@
     private async Task Submit()
     {
         // Check if the entries are != null
-        if (!String.IsNullOrEmpty(startLoc.Latitude) &&
-            !String.IsNullOrEmpty(startLoc.Longitude) &&
-            !String.IsNullOrEmpty(startLoc.Name) &&
-            !String.IsNullOrEmpty(destinyLoc.Latitude) &&
-            !String.IsNullOrEmpty(destinyLoc.Longitude) &&
-            !String.IsNullOrEmpty(destinyLoc.Name))
+        if (!String.IsNullOrWhiteSpace(startLoc.Latitude) &&
+            !String.IsNullOrWhiteSpace(startLoc.Longitude) &&
+            !String.IsNullOrWhiteSpace(startLoc.Name) &&
+            !String.IsNullOrWhiteSpace(destinyLoc.Latitude) &&
+            !String.IsNullOrWhiteSpace(destinyLoc.Longitude) &&
+            !String.IsNullOrWhiteSpace(destinyLoc.Name))
         {
             await Data.AddAreaAsync(Leave, startLoc, destinyLoc); // Save data
             MudDialog.Close(DialogResult.Ok(true));
@@ -46,7 +55,6 @@
         {
             await App.Current.MainPage.DisplayAlert("Error", "Please make sure you provided valid data.", "OK");
         }
-        
     } 
     void Cancel() => MudDialog.Cancel();
 

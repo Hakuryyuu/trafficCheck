@@ -1,4 +1,13 @@
-﻿using Microsoft.JSInterop;
+﻿/*
+ *  Created by: Hakuryuu
+ *  www.hakuryuu.net
+ *  info@hakuryuu.net
+ *  
+ *  Copyright (c) 2023 Hakuryuu
+ * 
+ */
+
+using Microsoft.JSInterop;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;

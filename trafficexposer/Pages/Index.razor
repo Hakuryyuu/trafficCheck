@@ -1,84 +1,125 @@
-﻿@page "/"
+﻿@* /*
+ *  Created by: Hakuryuu
+ *  www.hakuryuu.net
+ *  info@hakuryuu.net
+ *
+ *  Copyright (c) 2023 Hakuryuu
+ *
+ */ *@
+
+@page "/"
 @inject IDialogService Dialog
 @inject DataProvider Data
 
+<MudTabs Elevation="2" Rounded="false" ApplyEffectsToContainer="true" PanelClass="pa-6" Centered="true" Color="Color.Info">
+    <MudTabPanel Text="DASHBOARD">
+        <h1>| Overview</h1>
 
-<h1>| Overview</h1>
 
-
-@*<MudPaper Height="400px" Width="100%">*@
-@*    <MudContainer MaxWidth="MaxWidth.Small">
+        @*<MudPaper Height="400px" Width="100%">*@
+        @*    <MudContainer MaxWidth="MaxWidth.Small">
         <MudPaper Height="400px" Width="100%" Square="true">*@
-            <MudDivider DividerType="DividerType.Middle" Class="my-6" />
-            @if (Sysdba.SavedData.Areas != null)
+        <MudDivider DividerType="DividerType.Middle" Class="my-6" />
+        @if (Sysdba.SavedData.Areas != null)
+        {
+            @foreach (var Area in Sysdba.SavedData.Areas)
             {
-                @foreach (var Area in Sysdba.SavedData.Areas)
-                {
-                    var Inc = Data.getIncidents(Area).Result; // Obtain information about Incidents in given Area
-                    <MudCard>
-                        <MudCardHeader>
-                            <CardHeaderContent>
-                                <MudText Typo="Typo.h6">@Area.StartLocation.Name ➜ @Area.Destiny.Name</MudText>
-                            </CardHeaderContent>
-                            <CardHeaderActions>
-                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" @onclick="() => DeleteEntry(Area)" />
-                            </CardHeaderActions>
-                        </MudCardHeader>
-                        <MudCardContent>
-                            <MudText>Planned Leave: @Area.EstimatedLeave</MudText>
-                            @if (Array.Exists(Inc, e => e.Severity == IncidentTypes.Severity.CLOSED)) // Quick overview info
-                            {
-                                <MudAlert Severity="Severity.Error">Road Closure</MudAlert>
-                            }
-                            else if (Array.Exists(Inc, e => e.Severity == IncidentTypes.Severity.STATIONARY_TRAFFIC))
-                            {
-                                <MudAlert Severity="Severity.Error">Stationary Traffic</MudAlert>
-                            }
-                            else if (Array.Exists(Inc, e => e.Severity == IncidentTypes.Severity.SLOW_TRAFFIC))
-                            {
-                                <MudAlert Severity="Severity.Warning">Slow Traffic</MudAlert>
-                            }
-                            else if (Array.Exists(Inc, e => e.Severity == IncidentTypes.Severity.QUEUING_TRAFFIC))
-                            {
-                                <MudAlert Severity="Severity.Warning">Queuing Traffic</MudAlert>
-                            }
-                            else{
-                                <MudAlert Severity="Severity.Success">Currently no delays</MudAlert>
-                            }
-                        </MudCardContent>
-                        <MudCardActions>
-                            @if (Inc.Length > 1) // Only display Button if there are Incidents
-                            {
-                                <MudButton Variant="Variant.Text" Color="Color.Primary" @onclick="() => OpenIncidentsDialog(Inc, maxWidth)">Details</MudButton>
-                            }
-                        </MudCardActions>
-                    </MudCard>
-                    <MudDivider DividerType="DividerType.Middle" Class="my-6" />
-                }
-            } else{
-                <MudAlert Severity="Severity.Info">You have no saved Destinations</MudAlert>
+                var Inc = Data.getIncidents(Area).Result; // Obtain information about Incidents in given Area
+                <MudCard>
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">@Area.StartLocation.Name ➜ @Area.Destiny.Name</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" @onclick="() => DeleteEntry(Area)" />
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudText>Planned Leave: @Area.EstimatedLeave</MudText>
+                        @if (Array.Exists(Inc, e => e.Severity == IncidentTypes.Severity.CLOSED)) // Quick overview info
+                        {
+                            <MudAlert Severity="Severity.Error">Road Closure</MudAlert>
+                        }
+                        else if (Array.Exists(Inc, e => e.Severity == IncidentTypes.Severity.STATIONARY_TRAFFIC))
+                        {
+                            <MudAlert Severity="Severity.Error">Stationary Traffic</MudAlert>
+                        }
+                        else if (Array.Exists(Inc, e => e.Severity == IncidentTypes.Severity.SLOW_TRAFFIC))
+                        {
+                            <MudAlert Severity="Severity.Warning">Slow Traffic</MudAlert>
+                        }
+                        else if (Array.Exists(Inc, e => e.Severity == IncidentTypes.Severity.QUEUING_TRAFFIC))
+                        {
+                            <MudAlert Severity="Severity.Warning">Queuing Traffic</MudAlert>
+                        }
+                        else
+                        {
+                            <MudAlert Severity="Severity.Success">Currently no delays</MudAlert>
+                        }
+                    </MudCardContent>
+                    <MudCardActions>
+                        @if (Inc.Length > 0) // Only display Button if there are Incidents
+                        {
+                            <MudButton Variant="Variant.Text" Color="Color.Primary" @onclick="() => OpenIncidentsDialog(Inc, maxWidth)">Details</MudButton>
+                        }
+                    </MudCardActions>
+                </MudCard>
+                <MudDivider DividerType="DividerType.Middle" Class="my-6" />
             }
-@*        </MudPaper>
-   </MudContainer>*@
-@*</MudPaper>*@
+        }
+        else
+        {
+            <MudAlert Severity="Severity.Info">You have no saved Destinations</MudAlert>
+        }
+        @*        </MudPaper>
+        </MudContainer>*@
+        @*</MudPaper>*@
 
-<MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="@((e) => OpenDialog(maxWidth))" />
+        <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="@((e) => OpenDialog(maxWidth))" />
+    </MudTabPanel>
+    <MudTabPanel Text="SETTINGS">
+        <h1>| Settings</h1>
+        <MudButton Variant="Variant.Filled" @onclick="StopService">Stop Background Traffic Checker</MudButton>
+        <MudText Typo="Typo.caption">This will stop the Background check & Notifications on Traffic Updates. When Starting the App again it will be started automatically. </MudText>
+        <br />
+        <MudText>Current Status:</MudText>
+        <MudText Typo="Typo.overline">@Message</MudText>
+
+    </MudTabPanel>
+    <MudTabPanel Text="ABOUT">
+        <h1>| About</h1>
+        <h1></h1>
+        <MudText>Version 0.1 Beta</MudText>
+        <MudText>Created by Hakuryuu</MudText>
+        <MudText>info@hakuryuu.net</MudText>
+    </MudTabPanel>
+</MudTabs>
 
 
 @code {
     protected override void OnInitialized()
     {
         base.OnInitialized();
+#if ANDROID
+    if (!trafficexposer.Platforms.Android.AndroidServiceManager.IsRunning)
+    {
+    trafficexposer.Platforms.Android.AndroidServiceManager.StartMyService();
+    Message = "Service has started";
+    }
+    else{
+    Message = "RUNNING";
+    }
+#endif
     }
 
     DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true };
 
-    private void OpenDialog(DialogOptions options)
+    private async Task OpenDialog(DialogOptions options)
     {
+        var dialog = Dialog.Show<AddArea>("Add new Destination", options).Result;
 
-
-        Dialog.Show<AddArea>("Add new Destination", options);
-        base.StateHasChanged();
+        this.StateHasChanged();
+        this.ShouldRender();
 
     }
 
@@ -98,6 +139,18 @@
     {
         await Data.RemoveAreaAsync(area);
         this.StateHasChanged();
+    }
+
+
+
+    string Message = string.Empty;
+
+    void StopService()
+    {
+#if ANDROID
+    trafficexposer.Platforms.Android.AndroidServiceManager.StopMyService();
+    Message = "STOPPED";
+#endif
     }
 
 }

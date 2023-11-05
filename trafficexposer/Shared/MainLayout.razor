@@ -1,18 +1,18 @@
 ﻿@inherits LayoutComponentBase
 
-<MudThemeProvider IsDarkMode="true"/>
+<MudThemeProvider IsDarkMode="false"/>
 <MudDialogProvider />
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
+     <MudAppBar Elevation="0" Color="Color.Info" >
+         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" /> 
+        <MudText Typo="Typo.overline" Class="ml-3">Traffic Notifier</MudText>
         <MudSpacer />
         <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
-    </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-        @*NavMenu*@
+    </MudAppBar> 
+@*     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+        @*NavMenu
         <MudPaper Width="250px" Elevation="0" Class="py-3">
             <MudNavMenu Color="Color.Info" Bordered="true">
                 <MudNavLink Href="/" Icon="@Icons.Filled.Dashboard">Dashboard</MudNavLink>
@@ -20,10 +20,10 @@
                 <MudNavLink Href="/about">About</MudNavLink>
             </MudNavMenu>
         </MudPaper>
-    </MudDrawer>
-    <MudMainContent>
+    </MudDrawer> *@
+    <MudMainContent> 
         @Body
-    </MudMainContent>
+     </MudMainContent>
 </MudLayout>
 @code {
     bool _drawerOpen = true;

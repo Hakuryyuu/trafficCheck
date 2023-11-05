@@ -1,5 +1,15 @@
-﻿using Microsoft.AspNetCore.Components.WebView.Maui;
+﻿/*
+*  Created by: Hakuryuu
+*  www.hakuryuu.net
+*  info@hakuryuu.net
+*
+*  Copyright (c) 2023 Hakuryuu
+*
+*/
+
+using Microsoft.AspNetCore.Components.WebView.Maui;
 using MudBlazor.Services;
+using Plugin.LocalNotification;
 using trafficexposer.Data;
 
 namespace trafficexposer;
@@ -12,7 +22,8 @@ public static class MauiProgram
 		var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<App>()
-			.ConfigureFonts(fonts =>
+            .UseLocalNotification()
+            .ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 			});

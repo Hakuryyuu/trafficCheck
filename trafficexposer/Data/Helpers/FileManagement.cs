@@ -1,4 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿/*
+ *  Created by: Hakuryuu
+ *  www.hakuryuu.net
+ *  info@hakuryuu.net
+ *  
+ *  Copyright (c) 2023 Hakuryuu
+ * 
+ */
+
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +39,7 @@ namespace trafficexposer.Data
         {
             try
             {
-               await File.WriteAllTextAsync(APPATH + SETTINGS_FILENAME, sJson);
+                File.WriteAllText(APPATH + SETTINGS_FILENAME, sJson);
             }
             catch (Exception)
             {
@@ -48,6 +57,7 @@ namespace trafficexposer.Data
             if (!File.Exists(APPATH + SETTINGS_FILENAME))
             {
                 await SerializeSettings(new Settings());
+                return new Settings();
             }
             string sSettingsJson = File.ReadAllText(APPATH + SETTINGS_FILENAME); 
             return JsonConvert.DeserializeObject<Settings>(sSettingsJson);

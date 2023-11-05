@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+ *  Created by: Hakuryuu
+ *  www.hakuryuu.net
+ *  info@hakuryuu.net
+ *  
+ *  Copyright (c) 2023 Hakuryuu
+ * 
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -21,6 +30,6 @@ namespace trafficexposer.Data
         /// <summary>
         /// Saved Areas from the User
         /// </summary>
-        public static Settings SavedData { get; set; } = FM.getSettings().Result;
+        public static Settings SavedData { get; set; } 
     }
 }
